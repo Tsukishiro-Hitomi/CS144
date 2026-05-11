@@ -44,6 +44,10 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       output_.writer().close();
     }
 
+    if (diff >= data.size()) {
+      return; // entirely read
+    }
+
     if (diff > 0) {
       data = data.substr( diff );
       first_index = bytes_read_;
@@ -64,7 +68,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
   // capture all overlapped data except the cur one
   for ( auto& pair : buffer ) {
-    string cur_data = pair.second
+    string cur_data = pair.second;
     uint64_t cur_first_index = pair.first;
     uint64_t cur_end_index = cur_first_index + cur_data.size() - 1;
     if ( is_overlapped( cur_first_index, cur_end_index, first_index, end_index ) ) {
@@ -101,13 +105,13 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   auto it = buffer.find( bytes_read_ );
   if ( it != buffer.end() ) {
     string send_data = it->second;
-    writer().push( send_data );
+    output_.writer().push( send_data );
     buffer.erase( it );
     bytes_read_ += send_data.size();
     bytes_pend_ -= send_data.size();
 
     if ( has_last_ && bytes_read_ == final_index_ ) {
-      writer().close();
+      output_.writer().close();
     }
   }
 }

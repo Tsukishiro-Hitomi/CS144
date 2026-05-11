@@ -25,6 +25,8 @@ public:
   const Reader& reader() const { return reassembler_.reader(); }
   const Writer& writer() const { return reassembler_.writer(); }
 
+  std::optional<Wrap32> zero_point_ {};
+
 private:
   Reassembler reassembler_;
 };
