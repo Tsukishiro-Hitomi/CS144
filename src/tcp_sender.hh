@@ -48,4 +48,28 @@ private:
   ByteStream input_;
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
+
+  // To store those segments that have not been acknowledged
+  std::deque<TCPSenderMessage> segments_in_flight_ {};
+
+  // next absolute sequence number to be sent
+  uint64_t next_seqno_absolute_ {};
+
+  // sequence number that has been acknowledged
+  uint64_t ack_seqno_absolute_ {};
+
+  // store the consecutive retransmission times
+  uint64_t consecutive_retransmission_times_ {};
+
+  // sender window size, should be initialized to 1
+  uint16_t window_size_ { 1 };
+
+  // current RTO time
+  uint64_t cur_RTO_ms_ { initial_RTO_ms_ };
+
+  // time elapsed since last ack received
+  uint64_t elapsed_time_ {};
+
+  // whether the fin flag has been sent
+  bool fin_has_sent_ { false };
 };
