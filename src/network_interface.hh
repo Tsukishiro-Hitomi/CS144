@@ -1,7 +1,8 @@
 #pragma once
 
 #include <queue>
-
+#include <map>
+#include <vector>
 #include "address.hh"
 #include "ethernet_frame.hh"
 #include "ipv4_datagram.hh"
@@ -81,4 +82,21 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+  
+  // ARP Cache format
+  struct arp_entry_ {
+    EthernetAddress e_address;
+    size_t ttl;  // time to live, initialized as 30000ms (30s)
+    arp_entry_(EthernetAddress e): e_address(e), ttl(30000) {}
+    arp_entry_(): e_address(), ttl(30000) {}
+  };
+
+  // ARP Cache 
+  std::map<uint32_t, arp_entry_> arp_cache_ {};
+
+  // Datagrams queued to send because EthernetAddress unknown
+  std::map<uint32_t, std::vector<InternetDatagram>> queued_datagrams_ {};
+
+  // Record ARP request datagrams that have been sent in recent 5000ms (5s)
+  std::map<uint32_t, size_t> arp_sent_ {};
 };
