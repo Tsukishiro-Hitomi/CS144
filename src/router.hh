@@ -32,7 +32,25 @@ public:
   // Route packets between the interfaces
   void route();
 
+  
 private:
   // The router's collection of network interfaces
   std::vector<std::shared_ptr<NetworkInterface>> _interfaces {};
+
+  // record structure.
+  struct route_entry {
+    uint32_t route_prefix;
+    uint8_t prefix_length;
+    std::optional<Address> next_hop;
+    size_t interface_num;
+    
+    route_entry(uint32_t r, uint8_t p, std::optional<Address> n, size_t num): 
+      route_prefix(r), prefix_length(p), next_hop(n), interface_num(num) {}
+  };
+
+  // The router's collection of route entries.
+  std::vector<route_entry> route_table_ {};
+
+  // helper function to find the router entry index with longest prefix matched
+  int find_longest_prefix_matched(uint32_t dst_ip_address) const;
 };
